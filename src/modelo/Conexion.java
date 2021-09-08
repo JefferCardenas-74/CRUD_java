@@ -34,7 +34,7 @@ public class Conexion {
             return con;
 
         } catch (ClassNotFoundException | SQLException e) {
-            mensaje = "Error en la Conexion a la Base de Datos" + e.getMessage();
+            mensaje = "Error en la Conexion a la Base de Datoss" + e.getMessage();
             return null;
         }
     }
