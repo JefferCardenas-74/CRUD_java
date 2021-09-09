@@ -5,6 +5,7 @@
  */
 package main;
 import vista.main;
+import modelo.Viajero;
 
 /**
  *
@@ -17,5 +18,7 @@ public class reto5 {
         main frm = new main();
         frm.setVisible(true);
     }
+    
+    
     
 }

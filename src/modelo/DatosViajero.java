@@ -32,6 +32,10 @@ public class DatosViajero {
 
         con = Conexion.getConnection();
     }
+    
+    public String getMessage(){
+        return this.mensaje;
+    }
 
     public boolean crearViajero(Viajero viajero) {
         boolean creado = false;
@@ -71,7 +75,7 @@ public class DatosViajero {
             while (rs.next()) {
 
                 Viajero viajero = new Viajero();
-                viajero.setId(rs.getInt("v_id"));
+                viajero.setId(rs.getInt("v_identidad"));
                 viajero.setNombre(rs.getString("v_nombre"));
                 viajero.setEspecie(rs.getString("v_especie"));
                 viajero.setGenero(rs.getString("v_genero"));
@@ -97,10 +101,11 @@ public class DatosViajero {
             ps.setString(1, viajero.getNombre());
             ps.setString(2, viajero.getEspecie());
             ps.setString(3, viajero.getGenero());
-            ps.setInt(4, viajero.getId());
+            ps.setString(4, String.valueOf(viajero.getId()));
 
             if (ps.executeUpdate() > 0) {
                 actualizado = true;
+                this.mensaje = "Viajero actualizado con exito";
             }
 
         } catch (SQLException e) {
@@ -109,26 +114,61 @@ public class DatosViajero {
 
         return actualizado;
     }
-    
-    public boolean eliminarViajero(int id){
+
+    public boolean eliminarViajero(String id) {
         boolean eliminado = false;
-        
+
         PreparedStatement ps;
         String consulta = "DELETE from viajero where v_identidad = ?";
         try {
             ps = this.con.prepareStatement(consulta);
-            ps.setInt(1, id);
-            
-            if(ps.executeUpdate() > 0){
+            ps.setString(1, id);
+
+            if (ps.executeUpdate() > 0) {
                 eliminado = true;
+                this.mensaje = "Viajero eliminado con exito";
             }
-            
+
         } catch (SQLException e) {
-            
+
             this.mensaje = "Problema al eliminar el viajero" + e.getMessage();
-            
+
         }
-        
+
         return eliminado;
     }
+
+    public Viajero consultarXId(String id) {
+        this.mensaje = "";
+        Viajero viajero = null;
+        PreparedStatement ps;
+        String sql = "select * from viajero where v_identidad = ?";
+        
+        try {
+            
+            ps = this.con.prepareStatement(sql);
+            ps.setString(1, id);
+            rs = ps.executeQuery();
+
+            if(rs.next()) {
+                
+                viajero = new Viajero();
+                viajero.setId(rs.getInt("v_identidad"));
+                viajero.setNombre(rs.getString("v_nombre"));
+                viajero.setEspecie(rs.getString("v_especie"));
+                viajero.setGenero(rs.getString("v_genero"));
+
+            }else{
+                this.mensaje = "no existe viajero con esa id";
+            }
+            
+            rs.close();
+
+        } catch (SQLException e) {
+            
+            this.mensaje = "Error al consultar el viajero";
+        }
+        return viajero;
+    }
+
 }

@@ -5,9 +5,9 @@
  */
 package vista;
 
-import java.sql.*;
+import controlador.ViajeroControl;
 import javax.swing.JOptionPane;
-import modelo.Conexion;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -15,13 +15,19 @@ import modelo.Conexion;
  */
 public class main extends javax.swing.JFrame {
 
+    private ViajeroControl cViajero;
+    public boolean existe;
 
-    /**
-     * Creates new form main
-     */
     public main() {
+
         initComponents();
+        cViajero = new ViajeroControl();
         this.setLocationRelativeTo(null);
+        cViajero.listarViajeros(this);
+        txt_id.setEnabled(false);
+        btn_actualizar.setEnabled(false);
+        btn_eliminar.setEnabled(false);
+        this.setResizable(false);
     }
 
     /**
@@ -37,18 +43,19 @@ public class main extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         lbl_viajeros = new javax.swing.JLabel();
         lbl_nombre = new javax.swing.JLabel();
-        txt_nombre = new javax.swing.JTextField();
         lbl_especie = new javax.swing.JLabel();
-        txt_apellido = new javax.swing.JTextField();
+        txt_especie = new javax.swing.JTextField();
         lbl_genero = new javax.swing.JLabel();
         txt_genero = new javax.swing.JTextField();
         btn_consultar = new javax.swing.JButton();
         btn_agregar = new javax.swing.JButton();
         btn_actualizar = new javax.swing.JButton();
         btn_eliminar = new javax.swing.JButton();
-        btn_listar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbl_viajeros = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        txt_id = new javax.swing.JTextField();
+        txt_nombre = new javax.swing.JTextField();
 
         jTextField1.setText("jTextField1");
 
@@ -62,13 +69,11 @@ public class main extends javax.swing.JFrame {
         lbl_nombre.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lbl_nombre.setText("NOMBRE");
 
-        txt_nombre.setFont(new java.awt.Font("Yu Gothic Medium", 0, 18)); // NOI18N
-
         lbl_especie.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
         lbl_especie.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lbl_especie.setText("ESPECIE");
 
-        txt_apellido.setFont(new java.awt.Font("Yu Gothic Medium", 0, 18)); // NOI18N
+        txt_especie.setFont(new java.awt.Font("Yu Gothic Medium", 0, 18)); // NOI18N
 
         lbl_genero.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
         lbl_genero.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -77,14 +82,32 @@ public class main extends javax.swing.JFrame {
         txt_genero.setFont(new java.awt.Font("Yu Gothic Medium", 0, 18)); // NOI18N
 
         btn_consultar.setText("CONSULTAR");
+        btn_consultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_consultarActionPerformed(evt);
+            }
+        });
 
         btn_agregar.setText("AGREGAR");
+        btn_agregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_agregarActionPerformed(evt);
+            }
+        });
 
         btn_actualizar.setText("ACTUALIZAR");
+        btn_actualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_actualizarActionPerformed(evt);
+            }
+        });
 
         btn_eliminar.setText("ELIMINAR");
-
-        btn_listar.setText("LISTAR");
+        btn_eliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_eliminarActionPerformed(evt);
+            }
+        });
 
         tbl_viajeros.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -95,34 +118,57 @@ public class main extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
         });
         jScrollPane1.setViewportView(tbl_viajeros);
+
+        jLabel1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
+        jLabel1.setText("ID");
+
+        txt_id.setFont(new java.awt.Font("Yu Gothic Medium", 0, 18)); // NOI18N
+
+        txt_nombre.setFont(new java.awt.Font("Yu Gothic Medium", 0, 18)); // NOI18N
+        txt_nombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_nombreActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(lbl_genero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbl_especie, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbl_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txt_genero, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_apellido, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbl_viajeros, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(lbl_genero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lbl_especie, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lbl_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txt_genero, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+                            .addComponent(txt_especie, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+                            .addComponent(txt_id)
+                            .addComponent(txt_nombre))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btn_agregar, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -132,9 +178,7 @@ public class main extends javax.swing.JFrame {
                         .addComponent(btn_actualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_eliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_listar, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1))
+                        .addGap(52, 52, 52)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -142,31 +186,32 @@ public class main extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lbl_viajeros, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbl_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addComponent(txt_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txt_id, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addGap(11, 11, 11)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txt_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbl_especie, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_apellido, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txt_especie, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lbl_genero, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txt_genero, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txt_genero, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(1, 1, 1)))
-                .addGap(18, 18, 18)
+                .addGap(17, 17, 17)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_agregar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_consultar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_actualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_eliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_listar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_eliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -185,6 +230,127 @@ public class main extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_agregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregarActionPerformed
+
+        boolean creado = false;
+        if (!txt_nombre.getText().isEmpty() && !txt_especie.getText().isEmpty() && !txt_genero.getText().isEmpty()) {
+
+            creado = this.cViajero.crearViajero(this);
+
+            if (creado) {
+                JOptionPane.showMessageDialog(null, cViajero.getMessage());
+                limpiarTabla();
+                cViajero.listarViajeros(this);
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(null, cViajero.getMessage());
+            }
+
+        } else {
+
+            JOptionPane.showMessageDialog(null, "Los campos son obligatorios");
+        }
+
+
+    }//GEN-LAST:event_btn_agregarActionPerformed
+
+    private void txt_nombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nombreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_nombreActionPerformed
+
+    private void btn_consultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_consultarActionPerformed
+        existe = false;
+        txt_id.setEnabled(true);
+        if (!txt_id.getText().isEmpty()) {
+
+            this.cViajero.consultarXId(this);
+
+            if (!existe) {
+                JOptionPane.showMessageDialog(null, cViajero.getMessage());
+                limpiarCampos();
+            } else {
+                btn_actualizar.setEnabled(true);
+                btn_eliminar.setEnabled(true);
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Ingrese un identificador");
+        }
+
+    }//GEN-LAST:event_btn_consultarActionPerformed
+
+    private void btn_actualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_actualizarActionPerformed
+        boolean actualizado = false;
+        if (!txt_nombre.getText().isEmpty() && !txt_especie.getText().isEmpty() && !txt_genero.getText().isEmpty()) {
+
+            actualizado = this.cViajero.actualizarViajero(this);
+            
+            if (actualizado) {
+                JOptionPane.showMessageDialog(null, cViajero.getMessage());
+                limpiarCampos();
+                limpiarTabla();
+                cViajero.listarViajeros(this);
+                btn_actualizar.setEnabled(false);
+                btn_eliminar.setEnabled(false);
+                txt_id.setText("");
+                txt_id.setEnabled(false);
+            }else{
+                JOptionPane.showMessageDialog(null, cViajero.getMessage());
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(null, "NO pueden haber campos vacios");
+        }
+
+    }//GEN-LAST:event_btn_actualizarActionPerformed
+
+    private void btn_eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_eliminarActionPerformed
+
+        boolean eliminado = false;
+        if (!txt_nombre.getText().isEmpty() || !txt_especie.getText().isEmpty() || !txt_genero.getText().isEmpty()) {
+
+            int confirmacion = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar el viajero?",
+                    "Advertencia",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+
+            if (JOptionPane.YES_OPTION == confirmacion) {
+                eliminado = this.cViajero.eliminarViajero(this);
+
+                if (eliminado) {
+                    JOptionPane.showMessageDialog(null, cViajero.getMessage());
+                    limpiarCampos();
+                    limpiarTabla();
+                    cViajero.listarViajeros(this);
+                    btn_actualizar.setEnabled(false);
+                    btn_eliminar.setEnabled(false);
+                    txt_id.setText("");
+                    txt_id.setEnabled(false);
+                }
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(null, cViajero.getMessage());
+        }
+
+
+    }//GEN-LAST:event_btn_eliminarActionPerformed
+
+    public void limpiarTabla() {
+
+        DefaultTableModel model = (DefaultTableModel) this.tbl_viajeros.getModel();
+        this.tbl_viajeros.setModel(model);
+        while (model.getRowCount() > 0) {
+            model.removeRow(0);
+        }
+    }
+
+    public void limpiarCampos() {
+        txt_nombre.setText("");
+        txt_especie.setText("");
+        txt_genero.setText("");
+    }
 
     /**
      * @param args the command line arguments
@@ -226,7 +392,7 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JButton btn_agregar;
     private javax.swing.JButton btn_consultar;
     private javax.swing.JButton btn_eliminar;
-    private javax.swing.JButton btn_listar;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
@@ -235,8 +401,9 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_nombre;
     private javax.swing.JLabel lbl_viajeros;
     public javax.swing.JTable tbl_viajeros;
-    public javax.swing.JTextField txt_apellido;
+    public javax.swing.JTextField txt_especie;
     public javax.swing.JTextField txt_genero;
+    public javax.swing.JTextField txt_id;
     public javax.swing.JTextField txt_nombre;
     // End of variables declaration//GEN-END:variables
 }

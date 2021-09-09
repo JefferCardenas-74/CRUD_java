@@ -13,7 +13,7 @@ package modelo;
 public class Viajero {
     
     private int id;
-    private String nombre;
+    public String nombre;
     private String especie;
     private String genero;
     
